@@ -1,12 +1,17 @@
 import os
+import sys
 import shutil
 import glob
+from argparse import ArgumentParser
 from moviepy.editor import *
+from moviepy import config_defaults
 from pydub import AudioSegment
 from pydub.utils import *
 from tqdm import tqdm
 import subprocess
 from termcolor import colored
+
+from load_im import get_image_magick_executable
 
 def install(package):
     subprocess.call([sys.executable, "-m", "pip", "install", package])
@@ -18,33 +23,8 @@ def installModule(package):
     install(package)
     upgrade(package)
 
-def fixImageMagickFolderInMoviePy():
-    #search imagemagick exe
-    magickExePath = []
-    for root, dirs, files in os.walk("C:\\"):
-        if "magick.exe" in files:
-            magickExePath.append(os.path.join(root, "magick.exe"))
-            break
-
-    if not magickExePath:
-        print(colored("Instale o ImageMagick para esse programa funcionar", "red"))
-        exit()
-    magickExePath = magickExePath[0]
-
-    print(colored("Corrigindo MoviePy...", "green"))
-    folderMoviePyConfigDefaults = os.path.dirname(sys.executable) + "/lib/site-packages/moviepy/"
-    s = open(folderMoviePyConfigDefaults + "config_defaults.py").read()
-    old = 'IMAGEMAGICK_BINARY = os.getenv(\'IMAGEMAGICK_BINARY\', \'auto-detect\')'
-    new = 'IMAGEMAGICK_BINARY = r\"' + magickExePath + '\"'
-    s = s.replace(old, new)
-    f = open(folderMoviePyConfigDefaults + "config_defaults.py", 'w')
-    f.write(s)
-    f.close()
-
 def initializeMoviePy():
     installModule("moviepy")
-
-    fixImageMagickFolderInMoviePy()
 
 def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMilliseconds, debug):
     audioFile = AudioSegment.from_file(videoFilename, "mp4")
@@ -186,9 +166,13 @@ def deleteTempFiles():
             if "silence" in file:
                 os.remove(file)
 
+
 def main():
 	
-	initializeMoviePy()
+    #initializeMoviePy() # TODO: descomentar e adc flag no settings para só executar isso na 1a vez
+	
+	# define o caminho do imagehack em runtime
+    config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
 
     #passe aqui o nome do arquivo de vídeo, o limiar que demarca intensidade de silêncio (900 é um bom valor) e oq seria uma boa
     #duração de silêncio (coloquei 250 ms alí)
@@ -198,6 +182,7 @@ def main():
     clipSilenceBasedOnTxtFile("pythonfazpramim1-2.mp4", "silenceToRemoveCOPY.txt", debug = False)
 
     deleteTempFiles()
+
 
 if __name__ == "__main__":
     main()
