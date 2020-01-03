@@ -167,19 +167,34 @@ def deleteTempFiles():
                 os.remove(file)
 
 
+def parse_args():
+    parser = ArgumentParser(description = 'Remove os pedaços silenciosos do video.')
+    parser.add_argument('file', help = 'arquivo de vídeo mp4')
+    parser.add_argument('-r', action = 'store', dest = 'rs', type = int, default = 900, required = False,
+                        help = 'limiar que demarca intensidade de silêncio')
+    parser.add_argument('-t', action = 'store', dest = 'ts', type = int, default = 250, required = False,
+                        help = 'tempo mínimo de silêncio em milissegundos')
+    parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'mode debug')
+    
+    return parser.parse_args()
+
+
 def main():
-	
+    arguments = parse_args()
+    
+    if not os.path.exists(arguments.file):
+        print(f'{arguments.file} não existe.')
+        return
+    
     #initializeMoviePy() # TODO: descomentar e adc flag no settings para só executar isso na 1a vez
 	
 	# define o caminho do imagehack em runtime
     config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
-
-    #passe aqui o nome do arquivo de vídeo, o limiar que demarca intensidade de silêncio (900 é um bom valor) e oq seria uma boa
-    #duração de silêncio (coloquei 250 ms alí)
-    identifySilenceMomentsOfVideo("pythonfazpramim1-2.mp4", 900, 250, debug = False)
+    
+    identifySilenceMomentsOfVideo(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
 
     #essa função abaixo clipa o vídeo original passado por parâmetro de acordo com a informação de silêncio no arquivo de log
-    clipSilenceBasedOnTxtFile("pythonfazpramim1-2.mp4", "silenceToRemoveCOPY.txt", debug = False)
+    clipSilenceBasedOnTxtFile("pythonfazpramim1-2.mp4", "silenceToRemoveCOPY.txt", debug = arguments.debug)
 
     deleteTempFiles()
 
