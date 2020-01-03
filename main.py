@@ -46,7 +46,7 @@ def initializeMoviePy():
 
     fixImageMagickFolderInMoviePy()
 
-def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMilliseconds, mode = "DEBUG"):
+def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMilliseconds, debug):
     audioFile = AudioSegment.from_file(videoFilename, "mp4")
     videoFile = VideoFileClip(videoFilename)
 
@@ -56,7 +56,7 @@ def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMi
     fileCounter = 0
 
     silenceToRemoveTxt = open("silenceToRemove.txt", "w")
-    if(mode == "DEBUG"):
+    if(debug):
         silenceFileTxt = open("log.txt", "w")
     it = 0
     listOfClipsToCombine = []
@@ -66,7 +66,7 @@ def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMi
             #detecta um chunk que começa com silêncio
             startSilenceClipTime = currentTime
             startSilence = True
-            if mode == "DEBUG":
+            if debug:
                 silenceFileTxt.write("Começou: " + str(currentTime) + ":" + str(chunk.rms) + ":" + str(round(chunk.dBFS, 2)) + "\n")
         elif(chunk.rms > rmsOfSilence and startSilence == True and startSilenceClipTime < currentTime - 1.5):
             #achou o fim de um chunk que possui no mínimo 2x segundos, sendo x o tamanho do chunk
@@ -75,20 +75,20 @@ def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMi
             silenceFilename = "silence" + str(fileCounter) + ".mp4"
             textClip = TextClip(silenceFilename, fontsize = 80)
             compClip = CompositeVideoClip([silenceClip, textClip]).set_duration(endSilenceClipTime - startSilenceClipTime)
-            if mode == "DEBUG":
+            if debug:
                 if os.path.exists(silenceFilename) == False:
                     compClip.write_videofile(silenceFilename, logger = None)
             listOfClipsToCombine.append(compClip)
 
             startSilence = False
             fileCounter += 1
-            if(mode == "DEBUG"):
+            if(debug):
                 silenceFileTxt.write(silenceFilename + "\n")
             silenceToRemoveTxt.write(silenceFilename + ":" + str(startSilenceClipTime) + ":" + str(endSilenceClipTime) + "\n")
         elif(chunk.rms > rmsOfSilence and startSilence == True):
             #achou um chunk de exatamente x segundos, sendo x o tamanho do chunk. nesse caso ignora
             startSilence = False
-            if(mode == "DEBUG"):
+            if(debug):
                 silenceFileTxt.write("Interrompido: " + str(currentTime) + ":" + str(chunk.rms) + ":" + str(round(chunk.dBFS, 2)) + "\n")
         elif(it == len(chunksOfAudio) - 1):
             #última iteração
@@ -98,29 +98,29 @@ def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMi
                 silenceFilename = "silence" + str(fileCounter) + ".mp4"
                 textClip = TextClip(silenceFilename, fontsize = 80)
                 compClip = CompositeVideoClip([silenceClip, textClip]).set_duration(endSilenceClipTime - startSilenceClipTime)
-                if mode == "DEBUG":
+                if debug:
                     if os.path.exists(silenceFilename) == False:
                         compClip.write_videofile(silenceFilename, logger = None)
                 listOfClipsToCombine.append(compClip)
 
                 #silenceFileTxt.write("Final: " + str(currentTime) + ":" + str(chunk.rms) + ":" + str(round(chunk.dBFS, 2)) + "\n")
-                if(mode == "DEBUG"):
+                if(debug):
                     silenceFileTxt.write(silenceFilename)
                 silenceToRemoveTxt.write(silenceFilename + ":" + str(startSilenceClipTime) + ":" + str(endSilenceClipTime))
         elif(startSilence == True):
             #fins de debug
-            if(mode == "DEBUG"):
+            if(debug):
                 silenceFileTxt.write(str(currentTime) + ":" + str(chunk.rms) + ":" + str(round(chunk.dBFS, 2)) + "\n")
 
         currentTime += round(timeOfSilenceInMilliseconds / 1000.0, 2)
         it += 1
 
-    if os.path.exists("silence.mp4") == False and mode == "DEBUG":
+    if not os.path.exists("silence.mp4") and debug:
         silenceClips = concatenate_videoclips(listOfClipsToCombine)
         silenceClips.write_videofile("silence.mp4")
         silenceClips.close()
 
-    if(mode == "DEBUG"):
+    if(debug):
         silenceFileTxt.close()
     silenceToRemoveTxt.close()
     videoFile.close()
@@ -128,7 +128,7 @@ def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInMi
     if os.path.exists("silenceToRemoveCOPY.txt") == False:
         shutil.copyfile("silenceToRemove.txt", "silenceToRemoveCOPY.txt")
 
-def clipSilenceBasedOnTxtFile(videoFilename, txtFile, mode = "DEBUG"):
+def clipSilenceBasedOnTxtFile(videoFilename, txtFile, debug = True):
     silenceToRemoveFile = open(txtFile, "r")
     videoFile = VideoFileClip(videoFilename)
 
@@ -153,7 +153,7 @@ def clipSilenceBasedOnTxtFile(videoFilename, txtFile, mode = "DEBUG"):
             #ffmpeg_extract_subclip(videoFilename, 0, startTime, targetname=filename)
             clip = videoFile.subclip(0, startTime)
             listOfClipsToCombine.append(clip)
-            if mode == "DEBUG":
+            if debug:
                 clip.write_videofile(filename)
             lastEndTime = endTime
             firstIt = False
@@ -161,7 +161,7 @@ def clipSilenceBasedOnTxtFile(videoFilename, txtFile, mode = "DEBUG"):
             #ffmpeg_extract_subclip(videoFilename, lastEndTime, startTime, targetname=filename)
             clip = videoFile.subclip(lastEndTime, startTime)
             listOfClipsToCombine.append(clip)
-            if mode == "DEBUG":
+            if debug:
                 clip.write_videofile(filename)
             lastEndTime = endTime
         i += 1
@@ -187,14 +187,15 @@ def deleteTempFiles():
                 os.remove(file)
 
 def main():
-    initializeMoviePy()
+	
+	initializeMoviePy()
 
     #passe aqui o nome do arquivo de vídeo, o limiar que demarca intensidade de silêncio (900 é um bom valor) e oq seria uma boa
     #duração de silêncio (coloquei 250 ms alí)
-    identifySilenceMomentsOfVideo("pythonfazpramim1-2.mp4", 900, 250, "RELEASE")
+    identifySilenceMomentsOfVideo("pythonfazpramim1-2.mp4", 900, 250, debug = False)
 
     #essa função abaixo clipa o vídeo original passado por parâmetro de acordo com a informação de silêncio no arquivo de log
-    clipSilenceBasedOnTxtFile("pythonfazpramim1-2.mp4", "silenceToRemoveCOPY.txt", "RELEASE")
+    clipSilenceBasedOnTxtFile("pythonfazpramim1-2.mp4", "silenceToRemoveCOPY.txt", debug = False)
 
     deleteTempFiles()
 
