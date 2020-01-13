@@ -148,10 +148,10 @@ def clipSilenceBasedOnTxtFile(videoFilename, txtFile, debug = True):
 
     totalClips = i
 
-    if os.path.exists("original_without_silence.mp4") == False:
-        finalVideoClips = concatenate_videoclips(listOfClipsToCombine)
-        finalVideoClips.write_videofile("original_without_silence.mp4")
-        finalVideoClips.close()
+    #if os.path.exists("final.mp4") == False:
+    finalVideoClips = concatenate_videoclips(listOfClipsToCombine)
+    finalVideoClips.write_videofile("final.mp4")
+    finalVideoClips.close()
 
     videoFile.close()
     silenceToRemoveFile.close()
@@ -168,35 +168,42 @@ def deleteTempFiles():
 
 
 def parse_args():
-    parser = ArgumentParser(description = 'Remove os pedaços silenciosos do video.')
+    parser = ArgumentParser(description = 'Remove os pedaços silenciosos do vídeo.')
     parser.add_argument('file', help = 'arquivo de vídeo mp4')
     parser.add_argument('-r', action = 'store', dest = 'rs', type = int, default = 900, required = False,
                         help = 'limiar que demarca intensidade de silêncio')
     parser.add_argument('-t', action = 'store', dest = 'ts', type = int, default = 250, required = False,
                         help = 'tempo mínimo de silêncio em milissegundos')
     parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'mode debug')
-    
+
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
     return parser.parse_args()
 
 
 def main():
     arguments = parse_args()
-    
+
     if not os.path.exists(arguments.file):
         print(f'{arguments.file} não existe.')
         return
-    
+
+
+
     #initializeMoviePy() # TODO: descomentar e adc flag no settings para só executar isso na 1a vez
-	
+
 	# define o caminho do imagehack em runtime
     config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
-    
+
     identifySilenceMomentsOfVideo(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
 
     #essa função abaixo clipa o vídeo original passado por parâmetro de acordo com a informação de silêncio no arquivo de log
-    clipSilenceBasedOnTxtFile("pythonfazpramim1-2.mp4", "silenceToRemoveCOPY.txt", debug = arguments.debug)
+    clipSilenceBasedOnTxtFile(arguments.file, "silenceToRemoveCOPY.txt", debug = arguments.debug)
 
-    deleteTempFiles()
+    if (arguments.debug == False):
+        deleteTempFiles()
 
 
 if __name__ == "__main__":
