@@ -26,7 +26,7 @@ def installModule(package):
 def initializeMoviePy():
     installModule("moviepy")
 
-def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, debug):
+def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, debug):
     #TODO: permitir outros formatos de arquivo além do mp4
     audioFile = AudioSegment.from_file(videoFilename, "mp4")
     videoFile = VideoFileClip(videoFilename)
@@ -112,7 +112,7 @@ def identifySilenceMomentsOfVideo(videoFilename, rmsOfSilence, timeOfSilenceInSe
     if os.path.exists("silenceToRemoveCOPY.txt") == False:
         shutil.copyfile("silenceToRemove.txt", "silenceToRemoveCOPY.txt")
 
-def clipSilenceBasedOnTxtFile(videoFilename, txtFile, debug = True):
+def trimSilence(videoFilename, txtFile, debug = True):
     silenceToRemoveFile = open(txtFile, "r")
     videoFile = VideoFileClip(videoFilename)
 
@@ -202,10 +202,10 @@ def main():
 	# define o caminho do imagehack em runtime
     config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
 
-    identifySilenceMomentsOfVideo(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
+    identifySilenceClips(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
 
     #essa função abaixo clipa o vídeo original passado por parâmetro de acordo com a informação de silêncio no arquivo de log
-    clipSilenceBasedOnTxtFile(arguments.file, "silenceToRemoveCOPY.txt", debug = arguments.debug)
+    trimSilence(arguments.file, "silenceToRemoveCOPY.txt", debug = arguments.debug)
 
 if __name__ == "__main__":
     main()
