@@ -164,6 +164,8 @@ def deleteTempFiles():
     for file in os.listdir(os.getcwd()):
         if file.endswith(".txt"):
             os.remove(file)
+        if file.endswith(".mp3"):
+            os.remove(file)
         if file.endswith(".mp4"):
             if "clip" in file:
                 os.remove(file)
