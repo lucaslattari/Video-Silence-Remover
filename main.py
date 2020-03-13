@@ -8,27 +8,13 @@ from moviepy import config_defaults
 from pydub import AudioSegment
 from pydub.utils import *
 from tqdm import tqdm
-import subprocess
 from termcolor import colored
 
 from load_im import get_image_magick_executable
 
-def install(package):
-    subprocess.call([sys.executable, "-m", "pip", "install", package])
-
-def upgrade(package):
-    subprocess.call(['pip', "install", "--upgrade", package])
-
-def installModule(package):
-    install(package)
-    upgrade(package)
-
-def initializeMoviePy():
-    installModule("moviepy")
-
 def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, debug):
-    #TODO: permitir outros formatos de arquivo além do mp4
-    audioFile = AudioSegment.from_file(videoFilename, "mp4")
+    fileExtension = videoFilename.split(".")
+    audioFile = AudioSegment.from_file(videoFilename, fileExtension[1])
     videoFile = VideoFileClip(videoFilename)
 
     sizeOfEachChunk = 150.0
@@ -43,7 +29,7 @@ def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, de
 
     it = 0
     listOfClipsToCombine = []
-    print(colored("Buscando instantes de silêncio ao longo do vídeo...", "green"))
+    print(colored("Buscando instantes de silêncio ao longo do vídeo (Searching intervals of silence throughout the video)", "green"))
 
     for chunk in tqdm(chunksOfAudio):
         if(chunk.rms < rmsOfSilence and startSilence == False):
@@ -81,8 +67,8 @@ def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, de
                 silenceClip = videoFile.subclip(startSilenceClipTime)
                 silenceFilename = "silence" + str(fileCounter) + ".mp4"
                 textClip = TextClip(silenceFilename, fontsize = 80)
-                print(startSilenceClipTime)
-                print(endSilenceClipTime)
+                #print(startSilenceClipTime)
+                #print(endSilenceClipTime)
                 compClip = CompositeVideoClip([silenceClip, textClip]).set_duration(endSilenceClipTime - startSilenceClipTime)
                 listOfClipsToCombine.append(compClip)
 
@@ -116,7 +102,7 @@ def trimSilence(videoFilename, txtFile, debug = True):
     silenceToRemoveFile = open(txtFile, "r")
     videoFile = VideoFileClip(videoFilename)
 
-    print(colored("Recortando momentos de silêncio do vídeo...", "green"))
+    print(colored("Recortando momentos de silêncio do vídeo (Trimming intervals of silence of the video)...", "green"))
     firstIt = True
     listOfClipsToCombine = []
     i = 0
@@ -173,14 +159,13 @@ def deleteTempFiles():
                 os.remove(file)
 
 def parse_args():
-    parser = ArgumentParser(description = 'Remove os pedaços silenciosos do vídeo.')
-    parser.add_argument('file', help = 'arquivo de vídeo mp4')
+    parser = ArgumentParser(description = 'Remove os pedaços silenciosos do vídeo / Remove all sections with silence')
+    parser.add_argument('file', help = 'Caminho do arquivo de vídeo / Video file path')
     parser.add_argument('-r', action = 'store', dest = 'rs', type = int, default = 900, required = False,
-                        help = 'limiar que demarca intensidade de silêncio')
-    parser.add_argument('-t', action = 'store', dest = 'ts', type = float, default = 1.0, required = False,
-                        help = 'tempo mínimo de silêncio')
+                        help = 'Limiar que demarca intensidade de silêncio / Threshold that marks the measure of silence')
+    parser.add_argument('-t', action = 'store', dest = 'ts', type = float, default = 2.0, required = False,
+                        help = 'Tempo mínimo de silêncio em segundos / Minimum silence time in seconds')
     parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'modo debug')
-    parser.add_argument('--del', action = 'store_true', dest = 'deleteFiles', required = False, help = 'deletar arquivos de debug')
 
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
@@ -191,12 +176,11 @@ def parse_args():
 def main():
     arguments = parse_args()
 
-    if(arguments.deleteFiles):
-        print("Arquivos temporários foram deletados.")
-        deleteTempFiles()
+    print("Arquivos temporários foram deletados / Temporary files have been deleted")
+    deleteTempFiles()
 
     if not os.path.exists(arguments.file):
-        print(f'{arguments.file} não existe.')
+        print(f'{arguments.file} não existe (not found)')
         return
 
     #initializeMoviePy()
