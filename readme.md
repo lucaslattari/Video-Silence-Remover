@@ -6,7 +6,7 @@ The objective of this project is to create software capable of assisting in auto
 
 ### Installing
 
-1. From a terminal window, use "git clone https://github.com/libgit2/libgit2" command.
+1. From a terminal window, use "git clone https://github.com/lucaslattari/SilenceTrimmerForVideo.git" command.
 2. Run "pip install -r requirements.txt".
 
 ### Running
