@@ -148,7 +148,11 @@ def trimSilence(videoFilename, txtFile, debug = True):
 
 def deleteTempFiles():
     for file in os.listdir(os.getcwd()):
-        if file.endswith(".txt"):
+        if file.endswith("silenceToRemove.txt"):
+            os.remove(file)
+        if file.endswith("silenceToRemoveCOPY.txt"):
+            os.remove(file)
+        if file.endswith("log.txt"):
             os.remove(file)
         if file.endswith(".mp3"):
             os.remove(file)
@@ -165,7 +169,7 @@ def parse_args():
                         help = 'Limiar que demarca intensidade de silêncio / Threshold that marks the measure of silence')
     parser.add_argument('-t', action = 'store', dest = 'ts', type = float, default = 2.0, required = False,
                         help = 'Tempo mínimo de silêncio em segundos / Minimum silence time in seconds')
-    parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'modo debug')
+    parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'Modo debug / Debug mode')
 
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
@@ -182,8 +186,6 @@ def main():
     if not os.path.exists(arguments.file):
         print(f'{arguments.file} não existe (not found)')
         return
-
-    #initializeMoviePy()
 
 	# define o caminho do imagehack em runtime
     config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()

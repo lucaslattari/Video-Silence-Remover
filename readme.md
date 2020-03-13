@@ -1,87 +1,40 @@
-# Trim Silence of Videos
+# Trim Silence of Video
 
-The purpose of this project is to build software that is able to assist in editing videos, in an unsupervised manner.
+The objective of this project is to create software capable of assisting in automatic video editing, without human supervision.
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+## How to Use
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+1. From a terminal window, use "git clone https://github.com/libgit2/libgit2" command.
+2. Run "pip install -r requirements.txt".
 
-Say what the step will be
+### Running
 
-```
-Give the example
-```
+Run "python main.py video.mp4" from project folder. At the end of the program execution, the final.mp4 file will be created in the folder.
 
-And repeat
+Command line arguments are presented:
+![Program Arguments](https://universodiscreto.com/images/arguments.png)
 
-```
-until finished
-```
+## More Details
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
+* (https://www.youtube.com/watch?v=7ELvYSHCAc4) - Youtube video explaining how the software works and the source code behind it (in Brazilian Portuguese)
+* (https://universodiscreto.com/2020/01/30/fiz-um-programa-que-edita-videos-pra-mim-parte-1/) - First part of a blog post that explains how the software works in the most updated version (in Brazilian Portuguese).
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [pydub](https://github.com/jiaaro/pydub) - Manipulate audio with a simple and easy high level interface (http://pydub.com).
+* [moviepy](https://zulko.github.io/moviepy/) - Python module for video editing.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+Consider yourself welcome to contribute to the project!
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+* **Lucas Lattari** - [universodiscreto](https://github.com/lucaslattari)
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* People who follow me on youtube and on the internet.
+* **Douglas Lacerda** - [HermesPasser](https://github.com/HermesPasser) for helping to improve the initial code.

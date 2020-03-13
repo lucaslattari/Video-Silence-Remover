@@ -1,4 +1,5 @@
 __pycache__/
+vtest/
 *.py[cod]
 *$py.class
 
