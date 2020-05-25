@@ -1,23 +1,26 @@
-import os
+import os, os.path
 import sys
 import shutil
 import glob
 from argparse import ArgumentParser
-from moviepy.editor import *
 from moviepy import config_defaults
+from load_im import get_image_magick_executable
+
+# define o caminho do imagehack em runtime antes de importar o moviepy após
+config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
+
+from moviepy.editor import *
 from pydub import AudioSegment
 from pydub.utils import *
 from tqdm import tqdm
 from termcolor import colored
-
-from load_im import get_image_magick_executable
 
 def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, debug):
     fileExtension = videoFilename.split(".")
     audioFile = AudioSegment.from_file(videoFilename, fileExtension[1])
     videoFile = VideoFileClip(videoFilename)
 
-    sizeOfEachChunk = 150.0
+    sizeOfEachChunk = 200.0
     chunksOfAudio = make_chunks(audioFile, sizeOfEachChunk)
     currentTime = 0.0
     startSilence = False
@@ -67,8 +70,6 @@ def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, de
                 silenceClip = videoFile.subclip(startSilenceClipTime)
                 silenceFilename = "silence" + str(fileCounter) + ".mp4"
                 textClip = TextClip(silenceFilename, fontsize = 80)
-                #print(startSilenceClipTime)
-                #print(endSilenceClipTime)
                 compClip = CompositeVideoClip([silenceClip, textClip]).set_duration(endSilenceClipTime - startSilenceClipTime)
                 listOfClipsToCombine.append(compClip)
 
@@ -119,8 +120,6 @@ def trimSilence(videoFilename, txtFile, debug = True):
             firstIt = False
             lastEndTime = endTime
         elif(firstIt == True):
-            #from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-            #ffmpeg_extract_subclip(videoFilename, 0, startTime, targetname=filename)
             clip = videoFile.subclip(0, startTime)
             listOfClipsToCombine.append(clip)
             if debug:
@@ -128,7 +127,6 @@ def trimSilence(videoFilename, txtFile, debug = True):
             lastEndTime = endTime
             firstIt = False
         else:
-            #ffmpeg_extract_subclip(videoFilename, lastEndTime, startTime, targetname=filename)
             clip = videoFile.subclip(lastEndTime, startTime)
             listOfClipsToCombine.append(clip)
             if debug:
@@ -138,7 +136,6 @@ def trimSilence(videoFilename, txtFile, debug = True):
 
     totalClips = i
 
-    #if os.path.exists("final.mp4") == False:
     finalVideoClips = concatenate_videoclips(listOfClipsToCombine)
     finalVideoClips.write_videofile("final.mp4")
     finalVideoClips.close()
@@ -186,9 +183,6 @@ def main():
     if not os.path.exists(arguments.file):
         print(f'{arguments.file} não existe (not found)')
         return
-
-	# define o caminho do imagehack em runtime
-    config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
 
     identifySilenceClips(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
 
