@@ -96,8 +96,8 @@ def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, de
     silenceToRemoveTxt.close()
     videoFile.close()
 
-    if os.path.exists("silenceToRemoveCOPY.txt") == False:
-        shutil.copyfile("silenceToRemove.txt", "silenceToRemoveCOPY.txt")
+    #if os.path.exists("silenceToRemoveCOPY.txt") == False:
+    #    shutil.copyfile("silenceToRemove.txt", "silenceToRemoveCOPY.txt")
 
 def trimSilence(videoFilename, txtFile, debug = True):
     silenceToRemoveFile = open(txtFile, "r")
@@ -107,6 +107,8 @@ def trimSilence(videoFilename, txtFile, debug = True):
     firstIt = True
     listOfClipsToCombine = []
     i = 0
+    startTime = 0.0
+    endTime = 0.0
     for line in list(silenceToRemoveFile):
         if line[0] == "#":
             continue
@@ -115,7 +117,6 @@ def trimSilence(videoFilename, txtFile, debug = True):
         startTime = float(startTime)
         endTime = float(endTime)
 
-        filename = "clip" + str(i) + ".mp4"
         if(startTime == 0.0 and firstIt == True):
             firstIt = False
             lastEndTime = endTime
@@ -123,6 +124,7 @@ def trimSilence(videoFilename, txtFile, debug = True):
             clip = videoFile.subclip(0, startTime)
             listOfClipsToCombine.append(clip)
             if debug:
+                filename = "clip" + str(i) + ".mp4"
                 clip.write_videofile(filename)
             lastEndTime = endTime
             firstIt = False
@@ -130,11 +132,17 @@ def trimSilence(videoFilename, txtFile, debug = True):
             clip = videoFile.subclip(lastEndTime, startTime)
             listOfClipsToCombine.append(clip)
             if debug:
+                filename = "clip" + str(i) + ".mp4"
                 clip.write_videofile(filename)
             lastEndTime = endTime
         i += 1
 
-    totalClips = i
+    #add the end
+    clip = videoFile.subclip(endTime, float(videoFile.duration))
+    listOfClipsToCombine.append(clip)
+    if debug:
+        filename = "clip" + str(i) + ".mp4"
+        clip.write_videofile(filename)
 
     finalVideoClips = concatenate_videoclips(listOfClipsToCombine)
     finalVideoClips.write_videofile("final.mp4")
@@ -168,10 +176,6 @@ def parse_args():
                         help = 'Tempo mínimo de silêncio em segundos / Minimum silence time in seconds')
     parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'Modo debug / Debug mode')
 
-    if len(sys.argv) == 1:
-        parser.print_help(sys.stderr)
-        sys.exit(1)
-
     return parser.parse_args()
 
 def main():
@@ -187,7 +191,7 @@ def main():
     identifySilenceClips(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
 
     #essa função abaixo clipa o vídeo original passado por parâmetro de acordo com a informação de silêncio no arquivo de log
-    trimSilence(arguments.file, "silenceToRemoveCOPY.txt", debug = arguments.debug)
+    trimSilence(arguments.file, "silenceToRemove.txt", debug = arguments.debug)
 
 if __name__ == "__main__":
     main()
