@@ -1,6 +1,10 @@
 # Silence Trimmer for Video
 
-The objective of this project is to create software capable of assisting in automatic video editing, without human supervision.
+The objective of this project is to create software capable of assisting in automatic video editing, without human supervision. I have a video (in portuguese) that explains the project.
+
+<p align="center">
+  <a href="https://youtu.be/7ELvYSHCAc4"><img src="https://img.youtube.com/vi/7ELvYSHCAc4/maxresdefault.jpg"></a>
+</p>
 
 ## How to Use
 
