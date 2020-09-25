@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from moviepy import config_defaults
 from load_im import get_image_magick_executable
 
-# define o caminho do imagehack em runtime antes de importar o moviepy após
+# define o caminho do imagehack em runtime antes de importar o moviepy apos
 config_defaults.IMAGEMAGICK_BINARY = get_image_magick_executable()
 
 from moviepy.editor import *
@@ -33,7 +33,7 @@ def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, de
 
     it = 0
     listOfClipsToCombine = []
-    print(colored("Buscando instantes de silêncio ao longo do vídeo (Searching intervals of silence throughout the video)", "green"))
+    print(colored("Searching intervals of silence throughout the video", "green"))
 
     for chunk in tqdm(chunksOfAudio):
         if(chunk.rms < rmsOfSilence and startSilence == False):
@@ -104,7 +104,7 @@ def trimSilence(videoFilename, txtFile, debug = True):
     silenceToRemoveFile = open(txtFile, "r")
     videoFile = VideoFileClip(videoFilename)
 
-    print(colored("Recortando momentos de silêncio do vídeo (Trimming intervals of silence of the video)...", "green"))
+    print(colored("Trimming intervals of silence of the video...", "green"))
     firstIt = True
     listOfClipsToCombine = []
     i = 0
@@ -169,12 +169,12 @@ def deleteTempFiles():
                 os.remove(file)
 
 def parse_args():
-    parser = ArgumentParser(description = 'Remove os pedaços silenciosos do vídeo / Remove all sections with silence')
-    parser.add_argument('file', help = 'Caminho do arquivo de vídeo / Video file path')
+    parser = ArgumentParser(description = 'Remove all sections with silence')
+    parser.add_argument('file', help = 'Video file path')
     parser.add_argument('-r', action = 'store', dest = 'rs', type = int, default = 900, required = False,
-                        help = 'Limiar que demarca intensidade de silêncio / Threshold that marks the measure of silence')
+                        help = 'Threshold that marks the measure of silence')
     parser.add_argument('-t', action = 'store', dest = 'ts', type = float, default = 2.0, required = False,
-                        help = 'Tempo mínimo de silêncio em segundos / Minimum silence time in seconds')
+                        help = 'Minimum silence time in seconds')
     parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'Modo debug / Debug mode')
 
     return parser.parse_args()
@@ -182,11 +182,11 @@ def parse_args():
 def main():
     arguments = parse_args()
 
-    print("Arquivos temporários foram deletados / Temporary files have been deleted")
+    print("Temporary files have been deleted")
     deleteTempFiles()
 
     if not os.path.exists(arguments.file):
-        print(f'{arguments.file} não existe (not found)')
+        print(f'{arguments.file} not found')
         return
 
     identifySilenceClips(arguments.file, arguments.rs, arguments.ts, debug = arguments.debug)
