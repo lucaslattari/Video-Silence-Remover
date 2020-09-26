@@ -8,6 +8,8 @@ The objective of this project is to create software capable of assisting in auto
 
 ## How to Use
 
+First of all, it needs [ImageMagick](https://imagemagick.org/script/download.php) installed in your system. I have used ImageMagick-7.0.10-Q16.
+
 ### Installing
 
 1. From a terminal window, use "git clone https://github.com/lucaslattari/SilenceTrimmerForVideo.git" command.
