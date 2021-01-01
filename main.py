@@ -41,7 +41,7 @@ def identifySilenceClips(videoFilename, rmsOfSilence, timeOfSilenceInSeconds, de
             startSilenceClipTime = currentTime
             startSilence = True
             if(debug):
-                silenceFileTxt.write("Começou: " + str(round(currentTime, 2)) + ":" + str(chunk.rms) + ":" + str(round(chunk.dBFS, 2)) + "\n")
+                silenceFileTxt.write(": " + str(round(currentTime, 2)) + ":" + str(chunk.rms) + ":" + str(round(chunk.dBFS, 2)) + "\n")
         elif(chunk.rms > rmsOfSilence and startSilence == True and startSilenceClipTime < currentTime - timeOfSilenceInSeconds):
             #achou o fim de um chunk
             startSilenceClipTime += (sizeOfEachChunk / 1000.0)
@@ -175,7 +175,7 @@ def parse_args():
                         help = 'Threshold that marks the measure of silence')
     parser.add_argument('-t', action = 'store', dest = 'ts', type = float, default = 2.0, required = False,
                         help = 'Minimum silence time in seconds')
-    parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'Modo debug / Debug mode')
+    parser.add_argument('--d', action = 'store_true', dest = 'debug', required = False, help = 'Debug mode')
 
     return parser.parse_args()
 

@@ -1,9 +1,11 @@
 __pycache__/
 vtest/
+virtual/
 *.py[cod]
 *$py.class
 
 *.mp4
+*.sfk
 silenceToRemoveCOPY.txt
 silenceToRemove.txt
 
