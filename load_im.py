@@ -32,6 +32,7 @@ def _create_file(file_name):
 
 		file_name: caminho do magick.exe
 	"""
+	print(f"_create_file({file_name})")
 	config = ConfigParser()
 	config['DEFAULT'] = { CONFIG_IMAGEMAGICK_FILE: file_name }
 
@@ -62,10 +63,10 @@ def get_image_magick_executable():
 		time.sleep(1)
 
 		im_filename = _open_dialog_file()
-		if (im_filename == ''):
+		if im_filename:
+			_create_file(im_filename)
+		else:
 			print('Nenhum arquivo selecionado')
 			sys.exit(1)
-
-		_create_file(im_filename)
 
 	return im_filename
