@@ -32,7 +32,6 @@ def _create_file(file_name):
 
 		file_name: caminho do magick.exe
 	"""
-	print(f"_create_file({file_name})")
 	config = ConfigParser()
 	config['DEFAULT'] = { CONFIG_IMAGEMAGICK_FILE: file_name }
 
