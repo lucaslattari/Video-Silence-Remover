@@ -2,21 +2,29 @@
 import os
 import sys
 import time
+import platform
 from configparser import ConfigParser
 from tkinter import filedialog, Tk
 
 CONFIG_FILE_NAME = 'settings.ini'
 CONFIG_IMAGEMAGICK_FILE = 'imagemagick_file_name'
+WINDOWS ='Windows'
 
 def _open_dialog_file():
-	"""Abre uma janela de diálogo para selecionar o magick.exe no diretório do ImageMagick
+	"""Abre uma janela de diálogo para selecionar o magick.exe no diretório
+	 do ImageMagick
 
 		retorno: o caminho do arquivo
 	"""
 
-	file_types = [('Arquivo executável', '*.exe')]
 	file_name = None
-	title = 'Selecione o arquivo executável do ImageMagick (magick.exe)'
+
+	if platform.system()==WINDOWS:
+		file_types = [('Arquivo executável', '*.exe')]
+		title = 'Selecione o arquivo executável do ImageMagick (magick.exe)'
+	else:
+		file_types = []
+		title = 'Selecione o arquivo executável do ImageMagick (magick)'
 
 	root = Tk()
 	root.withdraw()
@@ -28,7 +36,8 @@ def _open_dialog_file():
 
 
 def _create_file(file_name):
-	"""Cria um arquivo de configuração (config.ini) e armazena o caminho do magick.exe nele
+	"""Cria um arquivo de configuração (definido na constante 
+	CONFIG_FILE_NAME) e armazena o caminho do magick.exe nele
 
 		file_name: caminho do magick.exe
 	"""
@@ -49,7 +58,9 @@ def _read_file():
 
 
 def get_image_magick_executable():
-	"""Retorna o caminho do magick.exe definido no settings.ini. Se settings.init não estiver definido então pergunta o caminho e abre uma janela de diálogo e então grava esse caminho no settings.ini.
+	"""Retorna o caminho do magick.exe do arquivo definido na constante
+	CONFIG_FILE_NAME. Se o arquivo não estiver definido então pergunta o
+	 caminho e abre uma janela de diálogo e então grava este caminho.
 
 		Mata o programa se nada for selecionado na janela de diálogo
 
@@ -58,7 +69,8 @@ def get_image_magick_executable():
 	if os.path.exists(CONFIG_FILE_NAME):
 		im_filename = _read_file()
 	else:
-		print('Selecione o executável do ImageMagick na pasta em que você o instalou:')
+		print('Selecione o executável do ImageMagick na pasta em que você o\
+		 instalou:')
 		time.sleep(1)
 
 		im_filename = _open_dialog_file()
