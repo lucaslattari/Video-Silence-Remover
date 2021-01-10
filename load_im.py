@@ -69,8 +69,7 @@ def get_image_magick_executable():
 	if os.path.exists(CONFIG_FILE_NAME):
 		im_filename = _read_file()
 	else:
-		print('Selecione o executável do ImageMagick na pasta em que você o\
-		 instalou:')
+		print('Selecione o executável do ImageMagick na pasta em que você o instalou:')
 		time.sleep(1)
 
 		im_filename = _open_dialog_file()
