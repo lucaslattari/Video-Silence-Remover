@@ -1,6 +1,6 @@
-# Silence Trimmer for Video
+# Video Silence Remover
 
-The objective of this project is to create software capable of assisting in automatic video editing, without human supervision. I have a video (in portuguese) that explains the project.
+The objective of this project is to create software capable of assisting in automatic video editing, with minimal human supervision. I have a video (in portuguese) that explains the project.
 
 <p align="center">
   <a href="https://youtu.be/7ELvYSHCAc4"><img src="https://img.youtube.com/vi/7ELvYSHCAc4/maxresdefault.jpg"></a>
@@ -12,7 +12,7 @@ First of all, it needs [ImageMagick](https://imagemagick.org/script/download.php
 
 ### Installing
 
-1. From a terminal window, use "git clone https://github.com/lucaslattari/SilenceTrimmerForVideo.git" command.
+1. From a terminal window, use "git clone https://github.com/lucaslattari/VideoSilenceRemover.git" command.
 2. Run "pip install -r requirements.txt".
 
 ### Running
@@ -24,7 +24,7 @@ Command line arguments are presented:
 
 ## More Details
 
-* (https://www.youtube.com/watch?v=7ELvYSHCAc4) - Youtube video explaining how the software works and the source code behind it (in Brazilian Portuguese)
+* (https://www.youtube.com/watch?v=7ELvYSHCAc4) - Youtube video explaining how the software works and the source code (in Brazilian Portuguese).
 * (https://universodiscreto.com/2020/01/30/fiz-um-programa-que-edita-videos-pra-mim-parte-1/) - First part of a blog post that explains how the software works in the most updated version (in Brazilian Portuguese).
 
 ## Built With
