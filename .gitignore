@@ -6,7 +6,7 @@ virtual/
 
 *.mp4
 *.sfk
-silenceToRemoveCOPY.txt
-silenceToRemove.txt
+*.log
+silence_to_remove.txt
 
 settings.ini
