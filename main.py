@@ -2,11 +2,8 @@
 import logging
 import os
 import os.path
-import sys
-import shutil
-import glob
 
-from colorama import init, Fore, Back, Style
+from colorama import Fore, Style
 from tqdm import tqdm
 from argparse import ArgumentParser
 
