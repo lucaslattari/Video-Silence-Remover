@@ -12,7 +12,7 @@ First of all, it needs [ImageMagick](https://imagemagick.org/script/download.php
 
 ### Installing
 
-1. From a terminal window, use "git clone https://github.com/lucaslattari/VideoSilenceRemover.git" command.
+1. From a terminal window, use "git clone https://github.com/lucaslattari/Video-Silence-Remover.git" command.
 2. Run "pip install -r requirements.txt".
 
 ### Running
