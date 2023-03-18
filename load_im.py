@@ -12,13 +12,12 @@ WINDOWS = 'Windows'
 
 
 def _open_dialog_file():
-    """Abre uma janela de diálogo para selecionar o magick.exe no diretório
-    do ImageMagick
-
-           retorno: o caminho do arquivo
     """
+    Opens a dialog window to select the magick.exe in the ImageMagick directory.
 
-    file_name = None
+    Returns:
+        str: The path of the file.
+    """
 
     if platform.system() == WINDOWS:
         file_types = [('Arquivo executável', '*.exe')]
@@ -39,10 +38,12 @@ def _open_dialog_file():
 
 
 def _create_file(file_name):
-    """Cria um arquivo de configuração (definido na constante
-    CONFIG_FILE_NAME) e armazena o caminho do magick.exe nele
+    """
+    Creates a configuration file (defined in the constant CONFIG_FILE_NAME)
+    and stores the path of magick.exe in it.
 
-            file_name: caminho do magick.exe
+    Args:
+        file_name (str): The path of magick.exe.
     """
     config = ConfigParser()
     config['DEFAULT'] = {CONFIG_IMAGEMAGICK_FILE: file_name}
@@ -52,9 +53,11 @@ def _create_file(file_name):
 
 
 def _read_file():
-    """Lê o arquivo de configuração (config.ini)
+    """
+    Reads the configuration file (config.ini).
 
-    retorno: o caminho do magick.exe
+    Returns:
+        str: The path of magick.exe.
     """
     config = ConfigParser()
     config.read(CONFIG_FILE_NAME)
@@ -62,20 +65,20 @@ def _read_file():
 
 
 def get_image_magick_executable():
-    """Retorna o caminho do magick.exe do arquivo definido na constante
-    CONFIG_FILE_NAME. Se o arquivo não estiver definido então pergunta o
-     caminho e abre uma janela de diálogo e então grava este caminho.
+    """
+    Returns the path of magick.exe from the file defined in the constant
+    CONFIG_FILE_NAME. If the file is not defined, it asks for the path and
+    opens a dialog window, then saves this path.
 
-            Mata o programa se nada for selecionado na janela de diálogo
+    Exits the program if nothing is selected in the dialog window.
 
-            retorno: o caminho do magick.exe
+    Returns:
+        str: The path of magick.exe.
     """
     if os.path.exists(CONFIG_FILE_NAME):
         im_filename = _read_file()
     else:
-        print(
-            'Selecione o executável do ImageMagick na pasta em que você o instalou:'
-        )
+        print('Selecione o executável do ImageMagick na pasta em que você o instalou:')
         time.sleep(1)
 
         im_filename = _open_dialog_file()

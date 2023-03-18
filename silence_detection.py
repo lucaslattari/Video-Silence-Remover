@@ -9,7 +9,8 @@ from audio_processing import (
 from video_processing import (
     load_video,
     create_composite_clip,
-    create_video_clips
+    create_video_clips,
+    save_merged_clips
 )
 
 
@@ -28,10 +29,9 @@ def detect_silence_audio_chunk(
         logging.info(f'start time: {elapsed_time} , end time: {None}')
 
         return elapsed_time, None, True
-    elif (  # the silence chunk is over
+    elif (
         chunk.rms > threshold_of_silence
         and is_silence_detected
-        # and start_silence_time <= elapsed_time - time_of_silence_in_seconds
     ):
         logging.info(f'Chunk of silence ended!')
         logging.info(f'Level of sound: {chunk.rms} : {threshold_of_silence}')
@@ -40,7 +40,7 @@ def detect_silence_audio_chunk(
             f'start time: {start_silence_time} , end time: {elapsed_time}')
 
         return start_silence_time, elapsed_time, False
-    else:  # no changes
+    else:
         logging.info(f'No changes.')
         logging.info(f'Level of sound: {chunk.rms} : {threshold_of_silence}')
         logging.info(f'Is silence detected? {is_silence_detected}')
@@ -59,7 +59,7 @@ def compute_silence_chunk(
     list_of_silence_clips,
     list_of_silences,
 ):
-    if not is_silence_detected:  # there is no silence chunk being processed right now
+    if not is_silence_detected:
         logging.info(f'Generating silence{silence_file_id}.mp4')
         silence_filename = f'silence{silence_file_id}.mp4'
         clip = create_composite_clip(
@@ -102,7 +102,7 @@ def identify_silence_clips(
         start_silence_time, end_silence_time, is_silence_detected = detect_silence_audio_chunk(
             chunk, elapsed_time, threshold_of_silence, time_of_silence_in_seconds, is_silence_detected, start_silence_time
         )
-        # don't enter (1)if a silence block is still being computed or (2)no silence block is being processed now
+
         if end_silence_time is not None:
             silence_file_id, list_of_silence_clips, list_of_silences = compute_silence_chunk(
                 is_silence_detected,
@@ -115,17 +115,14 @@ def identify_silence_clips(
                 list_of_silences,
             )
 
-        # Update elapsed time
         elapsed_time += round(chunk_size / 1000.0, 2)
 
     if is_debug_mode:
         logging.info(f'Generating a silence file called silence.mp4')
-        # generate a file with all silence clips
         save_merged_clips('silence.mp4', list_of_silence_clips)
 
     video_file.close()
 
-    # Saves information of detected silence snippets in a text file
     write_silences(list_of_silences)
 
     return list_of_silence_clips

@@ -18,9 +18,7 @@ def load_video(filename):
     return video_file
 
 
-def create_clip(
-    video_file, clip_filename, start_time, end_time, is_debug_mode=False
-):
+def create_clip(video_file, clip_filename, start_time, end_time, is_debug_mode=False):
     """
     Creates a single video clip from specified start and end times.
     """
@@ -35,16 +33,13 @@ def create_clip(
         return clip
 
 
-def create_composite_clip(
-    video_file, clip_filename, start_time, end_time, is_debug_mode=False
-):
+def create_composite_clip(video_file, clip_filename, start_time, end_time, is_debug_mode=False):
     """
     Creates a composite video clip with a label from specified start and end times.
     """
     try:
-        clip = create_clip(
-            video_file, clip_filename, start_time, end_time, False
-        )
+        clip = create_clip(video_file, clip_filename,
+                           start_time, end_time, False)
         text_clip = create_label(clip_filename)
 
         composite_clip = CompositeVideoClip([clip, text_clip]).set_duration(

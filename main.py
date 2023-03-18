@@ -2,7 +2,6 @@
 import logging
 
 import audio_processing
-
 from utils import delete_temp_files
 from cli import parse_args
 from silence_detection import (
@@ -30,9 +29,10 @@ def main():
         is_debug_mode=args.is_debug_mode,
     )
 
-    # essa função abaixo clipa o vídeo original passado por parâmetro de acordo com a informação de silêncio no arquivo de log
     remove_silence_intervals(
-        args.file, 'silence_to_remove.txt', is_debug_mode=args.is_debug_mode
+        args.file,
+        'silence_to_remove.txt',
+        is_debug_mode=args.is_debug_mode
     )
 
     logging.shutdown()
