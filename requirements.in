@@ -1,0 +1,16 @@
+certifi
+chardet
+colorama
+decorator
+idna
+imageio
+imageio-ffmpeg
+moviepy
+numpy
+Pillow
+proglog
+pydub
+requests
+termcolor
+tqdm
+urllib3

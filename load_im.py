@@ -6,25 +6,26 @@ import platform
 from configparser import ConfigParser
 from tkinter import filedialog, Tk
 
-CONFIG_FILE_NAME = 'settings.ini'
-CONFIG_IMAGEMAGICK_FILE = 'imagemagick_file_name'
-WINDOWS = 'Windows'
+
+DEFAULT_CONFIG_FILE = 'settings.ini'
+DEFAULT_MAGICK_EXECUTABLE = 'magick.exe'
+WINDOWS_PLATFORM = 'Windows'
 
 
-def _open_dialog_file():
+def open_dialog_file():
     """
-    Opens a dialog window to select the magick.exe in the ImageMagick directory.
+    Opens a dialog window to select the magick executable in the ImageMagick directory.
 
     Returns:
-        str: The path of the file.
+        str: The path of the file, or None if no file was selected.
     """
 
-    if platform.system() == WINDOWS:
-        file_types = [('Arquivo executável', '*.exe')]
-        title = 'Selecione o arquivo executável do ImageMagick (magick.exe)'
+    if platform.system() == WINDOWS_PLATFORM:
+        file_types = [('Executable file', '*.exe')]
+        title = f'Select the ImageMagick executable file "{DEFAULT_MAGICK_EXECUTABLE}"'
     else:
         file_types = []
-        title = 'Selecione o arquivo executável do ImageMagick (magick)'
+        title = f'Select the ImageMagick executable file "imagemagick"'
 
     root = Tk()
     root.withdraw()
@@ -37,55 +38,81 @@ def _open_dialog_file():
     return file_name
 
 
-def _create_file(file_name):
+def create_config_file(file_name, config_file=DEFAULT_CONFIG_FILE):
     """
-    Creates a configuration file (defined in the constant CONFIG_FILE_NAME)
-    and stores the path of magick.exe in it.
+    Create a configuration file and store the path of magick.exe in it.
 
     Args:
         file_name (str): The path of magick.exe.
+        config_file (str): The name of the configuration file. Default is 'settings.ini'.
     """
     config = ConfigParser()
-    config['DEFAULT'] = {CONFIG_IMAGEMAGICK_FILE: file_name}
+    config['DEFAULT'] = {'imagemagick_executable_path': file_name}
 
-    with open(CONFIG_FILE_NAME, 'w') as f:
-        config.write(f)
+    try:
+        with open(config_file, 'w') as f:
+            config.write(f)
+    except IOError:
+        print(f'Error: Unable to create configuration file {config_file}.')
+        sys.exit(1)
 
 
-def _read_file():
+def read_config_file(config_file_name=DEFAULT_CONFIG_FILE):
     """
-    Reads the configuration file (config.ini).
+    Reads the configuration file containing the path to the ImageMagick executable.
+
+    Args:
+        config_file_name (str): The name of the configuration file. Default is 'settings.ini'.
 
     Returns:
-        str: The path of magick.exe.
+        str: The path of the ImageMagick executable.
     """
+
     config = ConfigParser()
-    config.read(CONFIG_FILE_NAME)
-    return config['DEFAULT'].get(CONFIG_IMAGEMAGICK_FILE)
+
+    try:
+        with open(config_file_name, 'r') as f:
+            config.read_file(f)
+            return config['DEFAULT'].get('imagemagick_executable_path')
+    except FileNotFoundError:
+        print(f'Configuration file not found: {config_file_name}')
+        sys.exit(1)
+    except KeyError:
+        print(f'Configuration file is missing required value: imagemagick_executable_path')
+        sys.exit(1)
 
 
-def get_image_magick_executable():
+def get_image_magick_executable(config_file=DEFAULT_CONFIG_FILE):
     """
-    Returns the path of magick.exe from the file defined in the constant
-    CONFIG_FILE_NAME. If the file is not defined, it asks for the path and
+    Returns the path of magick.exe from the configuration file. If the file is not defined, it asks for the path and
     opens a dialog window, then saves this path.
 
     Exits the program if nothing is selected in the dialog window.
 
+    Args:
+        config_file (str): The name of the configuration file. Default is 'settings.ini'.
+
     Returns:
         str: The path of magick.exe.
     """
-    if os.path.exists(CONFIG_FILE_NAME):
-        im_filename = _read_file()
+    # Check if the configuration file exists
+    if os.path.exists(config_file):
+        # Read the path of magick.exe from the configuration file
+        im_filename = read_config_file(config_file)
     else:
-        print('Selecione o executável do ImageMagick na pasta em que você o instalou:')
+        # Prompt the user to select the path of magick.exe
+        print(
+            f'Please select the path of the ImageMagick executable (Default path: C:/Program Files/ImageMagick-7.0.10-Q16/{DEFAULT_MAGICK_EXECUTABLE}):')
         time.sleep(1)
 
-        im_filename = _open_dialog_file()
+        # Open a dialog window to select the file
+        im_filename = open_dialog_file()
         if im_filename:
-            _create_file(im_filename)
+            # If a file was selected, save the path to the configuration file
+            create_config_file(im_filename, config_file)
         else:
-            print('Nenhum arquivo selecionado')
+            # If no file was selected, exit the program
+            print('No file selected.')
             sys.exit(1)
 
     return im_filename
