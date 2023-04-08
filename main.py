@@ -8,6 +8,9 @@ from silence_detection import (
     identify_silence_clips,
     remove_silence_intervals
 )
+from video_processing import (
+    convert_output_video
+)
 
 
 def main():
@@ -33,6 +36,11 @@ def main():
         args.file,
         'silence_to_remove.txt',
         is_debug_mode=args.is_debug_mode
+    )
+
+    convert_output_video(
+        "output.mp4",
+        "final.mov"
     )
 
     logging.shutdown()

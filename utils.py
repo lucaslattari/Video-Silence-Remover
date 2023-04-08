@@ -1,3 +1,4 @@
+import subprocess
 import os
 from colorama import Fore, Style
 from moviepy import config_defaults
@@ -29,3 +30,12 @@ def delete_temp_files():
                 os.remove(filename)  # Delete silence files
 
     print(Fore.RED + 'Temporary files deleted.' + Style.RESET_ALL)
+
+
+def check_ffmpeg_installed():
+    try:
+        subprocess.run(["ffmpeg", "-version"], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except FileNotFoundError:
+        return False

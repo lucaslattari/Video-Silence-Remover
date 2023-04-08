@@ -157,7 +157,7 @@ def remove_silence_intervals(video_filename, txt_file, is_debug_mode=False):
     if not intervals:
         return
 
-    print(f'{Fore.GREEN} Trimming intervals of silence... {Style.RESET_ALL}')
+    print(f'{Fore.GREEN}Trimming intervals of silence... {Style.RESET_ALL}')
     create_video_clips(video_file, intervals, is_debug_mode)
 
     video_file.close()

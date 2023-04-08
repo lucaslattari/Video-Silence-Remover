@@ -1,4 +1,5 @@
 from colorama import Fore, Style
+import subprocess
 import os
 
 from moviepy.editor import (
@@ -6,6 +7,10 @@ from moviepy.editor import (
     TextClip,
     CompositeVideoClip,
     concatenate_videoclips,
+)
+
+from utils import (
+    check_ffmpeg_installed
 )
 
 
@@ -86,12 +91,12 @@ def create_video_clips(video_file, intervals, is_debug_mode=False):
     clips = []
     last_end_time = 0.0
 
-    percentage = 10.0
+    percentage = 0.10
     for clip_id, (start_time, end_time) in enumerate(intervals):
 
         if clip_id > int(percentage * len(intervals)):
-            print(f'{percentage}% concluded...')
-            percentage += 10.0
+            print(f'{int(percentage * 100.0)}% concluded...')
+            percentage += 0.10
 
         # print(f"{clip_id} of {len(intervals)}")
         if start_time == 0.0 and not clips:
@@ -118,4 +123,36 @@ def create_video_clips(video_file, intervals, is_debug_mode=False):
     )
     clips.append(clip)
 
-    save_merged_clips('final.mp4', clips)
+    save_merged_clips('output.mp4', clips)
+
+
+def convert_output_video(input_video, output_video):
+    # Used to convert to DaVinci Resolve and others video editors
+    if not check_ffmpeg_installed():
+        print("Error: FFmpeg not found. Please install FFmpeg to use this function.")
+        return
+
+    extension = extension = output_video[output_video.rfind('.'):]
+
+    if format == '.mov':
+        command = [
+            "ffmpeg", "-i", input_video,
+            "-c:v", "prores", "-profile:v", "3",
+            "-c:a", "pcm_s16le",
+            output_video
+        ]
+    else:
+        command = [
+            "ffmpeg", "-i", input_video,
+            "-c:v", "libx264", "-crf", "23",
+            "-c:a", "aac", "-b:a", "192k",
+            output_video
+        ]
+
+    try:
+        subprocess.run(command, check=True)
+        print(f"Conversion successful. Output file: {output_video}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error during conversion: {e}")
+
+    os.remove("output.mp4")

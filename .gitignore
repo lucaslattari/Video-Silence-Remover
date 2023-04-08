@@ -5,6 +5,7 @@ virtual/
 *$py.class
 
 *.mp4
+*.mov
 *.sfk
 *.log
 silence_to_remove.txt
