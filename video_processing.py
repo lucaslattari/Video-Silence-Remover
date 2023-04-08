@@ -58,9 +58,20 @@ def create_label(filename):
     return TextClip(filename, fontsize=80)
 
 
+def merge_video_files(filenames):
+    video_clips = []
+
+    for filename in filenames:
+        clip = VideoFileClip(filename)
+        video_clips.append(clip)
+
+    return video_clips
+
+
 def save_merged_clips(filename, list_of_clips):
     try:
         concatenated_silence_clips = concatenate_videoclips(list_of_clips)
+        del (list_of_clips)
         concatenated_silence_clips.write_videofile(filename)
     except Exception as e:
         print(f'Error saving video file: {e}')
@@ -68,14 +79,21 @@ def save_merged_clips(filename, list_of_clips):
         concatenated_silence_clips.close()
 
 
-def create_video_clips(video_file, intervals, is_debug_mode):
+def create_video_clips(video_file, intervals, is_debug_mode=False):
     """
     Creates video clips from specified intervals and saves into a single file.
     """
     clips = []
     last_end_time = 0.0
 
+    percentage = 10.0
     for clip_id, (start_time, end_time) in enumerate(intervals):
+
+        if clip_id > int(percentage * len(intervals)):
+            print(f'{percentage}% concluded...')
+            percentage += 10.0
+
+        # print(f"{clip_id} of {len(intervals)}")
         if start_time == 0.0 and not clips:
             last_end_time = end_time
         else:

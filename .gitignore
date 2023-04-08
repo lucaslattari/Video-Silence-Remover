@@ -8,5 +8,6 @@ virtual/
 *.sfk
 *.log
 silence_to_remove.txt
+*.code-workspace
 
 settings.ini

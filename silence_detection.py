@@ -10,6 +10,7 @@ from video_processing import (
     load_video,
     create_composite_clip,
     create_video_clips,
+    merge_video_files,
     save_merged_clips
 )
 
@@ -60,18 +61,19 @@ def compute_silence_chunk(
     list_of_silences,
 ):
     if not is_silence_detected:
-        logging.info(f'Generating silence{silence_file_id}.mp4')
-        silence_filename = f'silence{silence_file_id}.mp4'
-        clip = create_composite_clip(
-            video_file,
-            silence_filename,
-            start_silence_time,
-            end_silence_time,
-            is_debug_mode,
-        )
-        list_of_silence_clips.append(clip)
+        if is_debug_mode:
+            logging.info(f'Generating silence{silence_file_id}.mp4')
+            silence_filename = f'silence{silence_file_id}.mp4'
+            clip = create_composite_clip(
+                video_file,
+                silence_filename,
+                start_silence_time,
+                end_silence_time,
+                is_debug_mode,
+            )
+            list_of_silence_clips.append(f'silence{silence_file_id}.mp4')
+            silence_file_id += 1
         list_of_silences.append((start_silence_time, end_silence_time))
-        silence_file_id += 1
 
     return silence_file_id, list_of_silence_clips, list_of_silences
 
@@ -119,6 +121,8 @@ def identify_silence_clips(
 
     if is_debug_mode:
         logging.info(f'Generating a silence file called silence.mp4')
+
+        list_of_silence_clips = merge_video_files(list_of_silence_clips)
         save_merged_clips('silence.mp4', list_of_silence_clips)
 
     video_file.close()
