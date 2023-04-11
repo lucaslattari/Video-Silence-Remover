@@ -27,7 +27,7 @@ def main():
 
     identify_silence_clips(
         args.file,
-        args.rms_of_silence,
+        args.silence_sensitivity,
         args.time_of_silence_in_seconds,
         is_debug_mode=args.is_debug_mode,
     )

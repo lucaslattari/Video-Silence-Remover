@@ -1,5 +1,6 @@
 from colorama import Fore, Style
 from tqdm import tqdm
+import numpy as np
 import logging
 
 from audio_processing import (
@@ -78,16 +79,27 @@ def compute_silence_chunk(
     return silence_file_id, list_of_silence_clips, list_of_silences
 
 
+def compute_threshold_of_silence(audio_chunks, percentile=10):
+    audio_levels = [chunk.rms for chunk in audio_chunks]
+    return np.percentile(audio_levels, percentile)
+
+
 def identify_silence_clips(
     video_filename,
-    threshold_of_silence,
+    silence_sensitivity,
     time_of_silence_in_seconds,
     is_debug_mode=False,
     chunk_size=200.0,
+    percentile=10
 ):
     audio_file = load_audio(video_filename)
     video_file = load_video(video_filename)
     audio_chunks = split_audio(audio_file, chunk_size)
+
+    # Calculate the percentile based on the silence_sensitivity
+    percentile = silence_sensitivity * 10
+    threshold_of_silence = compute_threshold_of_silence(
+        audio_chunks, percentile)
 
     is_silence_detected = False
     elapsed_time = 0.0

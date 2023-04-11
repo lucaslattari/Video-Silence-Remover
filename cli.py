@@ -7,22 +7,23 @@ def parse_args():
     )
     parser.add_argument('file', help='Video file path')
     parser.add_argument(
-        '-r',
+        '-s',
         action='store',
-        dest='rms_of_silence',
+        dest='silence_sensitivity',
         type=int,
-        default=100,
+        choices=range(1, 10),
+        default=5,
         required=False,
-        help='Minimum volume level to consider as silence',
+        help=f"Silence sensitivity level from 1 (less aggressive) to 9 (more aggressive), default: %(default)s",
     )
     parser.add_argument(
         '-t',
         action='store',
         dest='time_of_silence_in_seconds',
         type=float,
-        default=1.0,
+        default=2.0,
         required=False,
-        help='Minimum silence time in seconds',
+        help=f"Minimum silence time in seconds, default: %(default)s",
     )
     parser.add_argument(
         '--d',

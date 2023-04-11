@@ -1,5 +1,6 @@
 from colorama import Fore, Style
 import subprocess
+import tempfile
 import os
 
 from moviepy.editor import (
@@ -98,7 +99,6 @@ def create_video_clips(video_file, intervals, is_debug_mode=False):
             print(f'{int(percentage * 100.0)}% concluded...')
             percentage += 0.10
 
-        # print(f"{clip_id} of {len(intervals)}")
         if start_time == 0.0 and not clips:
             last_end_time = end_time
         else:
@@ -132,27 +132,43 @@ def convert_output_video(input_video, output_video):
         print("Error: FFmpeg not found. Please install FFmpeg to use this function.")
         return
 
-    extension = extension = output_video[output_video.rfind('.'):]
+    extension = output_video[output_video.rfind('.'):]
+
+    # Create a temporary file for the converted video
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    temp_file = tempfile.NamedTemporaryFile(
+        delete=False, suffix=extension, dir=script_dir)
+    temp_file.close()
 
     if format == '.mov':
         command = [
-            "ffmpeg", "-i", input_video,
+            "ffmpeg", "-y", "-i", input_video,
             "-c:v", "prores", "-profile:v", "3",
             "-c:a", "pcm_s16le",
-            output_video
+            temp_file.name
         ]
     else:
         command = [
-            "ffmpeg", "-i", input_video,
+            "ffmpeg", "-y", "-i", input_video,
             "-c:v", "libx264", "-crf", "23",
             "-c:a", "aac", "-b:a", "192k",
-            output_video
+            temp_file.name
         ]
 
     try:
         subprocess.run(command, check=True)
-        print(f"Conversion successful. Output file: {output_video}")
+        print(
+            f"Conversion successful. Temporary output file: {temp_file.name}")
+
+        # Delete the original input video
+        os.remove(input_video)
+
+        # Rename the temporary file to the original input video name
+        os.rename(temp_file.name, input_video)
+
+        print(f"Input video '{input_video}' overwritten successfully.")
     except subprocess.CalledProcessError as e:
         print(f"Error during conversion: {e}")
 
-    os.remove("output.mp4")
+        # Clean up the temporary file in case of an error
+        os.remove(temp_file.name)
